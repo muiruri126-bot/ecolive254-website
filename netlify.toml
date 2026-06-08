@@ -1,0 +1,19 @@
+# Netlify configuration for the ECoLIve Kenya static site.
+# No build step — the site is plain HTML/CSS/JS served from the repo root.
+
+[build]
+  publish = "."
+  command = ""
+
+# Nice-to-have security/caching headers for a static marketing site.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
