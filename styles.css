@@ -332,6 +332,11 @@ a { color: inherit; text-decoration: none; }
 .g-tall { grid-row: span 2; }
 .g-big  { grid-column: span 2; grid-row: span 2; }
 
+/* ---------- Video feature ---------- */
+.video-feature { max-width: 940px; margin: 0 auto 44px; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); background: #0c160d; }
+.video-feature video { width: 100%; display: block; max-height: 560px; background: #0c160d; }
+.video-feature figcaption { background: #fff; color: var(--muted); font-size: .9rem; padding: 14px 18px; text-align: center; font-style: italic; }
+
 /* ---------- Lightbox ---------- */
 .lightbox {
   position: fixed; inset: 0; z-index: 1000;
