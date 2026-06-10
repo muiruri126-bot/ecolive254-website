@@ -15,6 +15,77 @@ nav.querySelectorAll("a").forEach((a) =>
   a.addEventListener("click", () => nav.classList.remove("open"))
 );
 
+// ---- Tabbed page navigation (each nav item shows only its own content) ----
+const pageEls = Array.from(document.querySelectorAll("[data-page]"));
+const pageNames = [...new Set(pageEls.map((el) => el.dataset.page))];
+
+function idToPage(id) {
+  if (!id) return null;
+  const el = document.getElementById(id);
+  if (!el) return null;
+  const holder = el.closest("[data-page]");
+  return holder ? holder.dataset.page : null;
+}
+
+function setActiveNav(page) {
+  document.querySelectorAll('#nav a[href^="#"]').forEach((a) => {
+    a.classList.toggle("active", idToPage(a.getAttribute("href").slice(1)) === page);
+  });
+}
+
+function jumpTop() {
+  const html = document.documentElement;
+  const prev = html.style.scrollBehavior;
+  html.style.scrollBehavior = "auto";
+  window.scrollTo(0, 0);
+  html.style.scrollBehavior = prev;
+}
+
+function showPage(page) {
+  if (!pageNames.includes(page)) page = "home";
+  pageEls.forEach((el) => {
+    const on = el.dataset.page === page;
+    el.classList.toggle("page-hidden", !on);
+    if (on) el.querySelectorAll(".reveal").forEach((r) => r.classList.add("visible"));
+  });
+  setActiveNav(page);
+  return page;
+}
+
+function goTo(id) {
+  const page = idToPage(id) || (id === "home" ? "home" : null);
+  if (!page) return false;
+  showPage(page);
+  const target = document.getElementById(id);
+  const firstOfPage = pageEls.find((el) => el.dataset.page === page);
+  if (target && target !== firstOfPage) {
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  } else {
+    jumpTop();
+  }
+  return true;
+}
+
+// Intercept in-page anchor links (nav, footer, hero buttons, inline links)
+document.addEventListener("click", (e) => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a) return;
+  const id = a.getAttribute("href").slice(1);
+  if (!id) return;
+  if (goTo(id)) {
+    e.preventDefault();
+    nav.classList.remove("open");
+    history.replaceState(null, "", "#" + id);
+  }
+});
+
+// Open the correct tab on first load (also handles links from /post and /news)
+showPage(idToPage(location.hash.slice(1)) || "home");
+jumpTop();
+
+// Respond to manual hash edits / back-forward navigation
+window.addEventListener("hashchange", () => goTo(location.hash.slice(1)));
+
 // Scroll reveal — tag the major blocks
 const revealTargets = document.querySelectorAll(
   ".section-head, .vm-card, .value, .theme-card, .program-card, .s2s-step, .strategy-list li, .impact-card, .sdg, .logo-list li, .cta-form, .founder-quote"
